@@ -1,0 +1,18 @@
+services:
+  - type: worker
+    name: herodll-bot-discord
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    disk:
+      name: bot-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
+      - key: NODE_ENV
+        value: production
