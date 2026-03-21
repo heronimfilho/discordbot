@@ -119,7 +119,7 @@ function buildTextModal(customId: string, title: string, existingText?: string) 
     .setLabel('Texto do comando')
     .setPlaceholder(
       isCounter
-        ? 'Variáveis disponíveis: {{counter}} — número atual\nEx: Cachorro latiu {{counter}} vezes!'
+        ? 'Variáveis disponíveis: {{counter}} — número atual\nEx: Olavo está em silêncio há {{counter}} dias'
         : 'Digite o texto que será exibido quando o comando for chamado.',
     )
     .setStyle(TextInputStyle.Paragraph)
