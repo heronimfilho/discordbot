@@ -19,7 +19,7 @@ export class CustomCommandService {
     await this.registerGuildCommand(dto.guild_id, dto.name);
   }
 
-  async update(guildId: string, name: string, dto: UpdateCustomCommandDTO): Promise<void> {
+  update(guildId: string, name: string, dto: UpdateCustomCommandDTO): void {
     const existing = this.repo.findByName(guildId, name);
     if (!existing) throw new Error(`Command '${name}' not found`);
     this.repo.update(guildId, name, dto);

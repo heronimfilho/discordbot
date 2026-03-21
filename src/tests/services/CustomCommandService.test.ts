@@ -3,14 +3,15 @@ import { CustomCommandService } from '../../services/CustomCommandService';
 import { CustomCommandRepository } from '../../database/repositories/CustomCommandRepository';
 import { CustomCommand } from '../../types/CustomCommand';
 
-const mockRepo = {
+const mockFns = {
   create: vi.fn(),
   findByName: vi.fn(),
   findAllByGuild: vi.fn(),
   update: vi.fn(),
   incrementCounter: vi.fn(),
   delete: vi.fn(),
-} as unknown as CustomCommandRepository;
+};
+const mockRepo = mockFns as unknown as CustomCommandRepository;
 
 describe('CustomCommandService', () => {
   let service: CustomCommandService;
@@ -21,14 +22,14 @@ describe('CustomCommandService', () => {
   });
 
   it('creates a command when name is available', async () => {
-    vi.mocked(mockRepo.findByName).mockReturnValue(null);
+    mockFns.findByName.mockReturnValue(null);
     vi.spyOn(service as unknown as { registerGuildCommand: () => Promise<void> }, 'registerGuildCommand').mockResolvedValue(undefined);
     await service.create({ guild_id: 'g1', name: 'test', type: 'response', text: 'Hello' });
-    expect(mockRepo.create).toHaveBeenCalledOnce();
+    expect(mockFns.create).toHaveBeenCalledOnce();
   });
 
   it('throws when command name already exists', async () => {
-    vi.mocked(mockRepo.findByName).mockReturnValue({ name: 'test' } as CustomCommand);
+    mockFns.findByName.mockReturnValue({ name: 'test' } as CustomCommand);
     await expect(
       service.create({ guild_id: 'g1', name: 'test', type: 'response', text: 'Hello' }),
     ).rejects.toThrow('already exists');

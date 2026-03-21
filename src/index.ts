@@ -15,12 +15,14 @@ async function main() {
   const commandHandler = new CommandHandler(client, customCommandService);
   const interactionHandler = new InteractionHandler(client, commandHandler, customCommandService);
 
-  client.once(Events.ClientReady, async (readyClient) => {
-    console.log(`Logged in as ${readyClient.user.tag}`);
-    await commandHandler.load();
-    await commandHandler.register();
-    interactionHandler.register();
-    console.log('Bot is ready.');
+  client.once(Events.ClientReady, (readyClient) => {
+    void (async () => {
+      console.log(`Logged in as ${readyClient.user.tag}`);
+      await commandHandler.load();
+      await commandHandler.register();
+      interactionHandler.register();
+      console.log('Bot is ready.');
+    })();
   });
 
   await client.login(env.DISCORD_TOKEN);

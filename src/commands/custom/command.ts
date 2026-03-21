@@ -234,7 +234,7 @@ export async function handleCommandModal(
         ephemeral: true,
       });
     } else if (action === 'custom_command_edit') {
-      await service.update(guildId, name, { type, text });
+      service.update(guildId, name, { type, text });
       await interaction.reply({
         content: `Command \`/${name}\` updated successfully!`,
         ephemeral: true,

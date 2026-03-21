@@ -11,7 +11,8 @@ export class InteractionHandler {
   ) {}
 
   register(): void {
-    this.client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+    this.client.on(Events.InteractionCreate, (interaction: Interaction) => {
+      void (async () => {
       // Handle modals
       if (interaction.isModalSubmit()) {
         if (
@@ -67,6 +68,7 @@ export class InteractionHandler {
           }
         }
       }
+      })();
     });
   }
 }

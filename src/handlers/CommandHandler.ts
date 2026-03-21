@@ -21,7 +21,7 @@ export class CommandHandler {
       .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
 
     for (const file of files) {
-      const module = await import(path.join(utilityDir, file));
+      const module = await import(path.join(utilityDir, file)) as Record<string, unknown>;
       for (const exportedValue of Object.values(module)) {
         const command = exportedValue as ICommand;
         if (command?.data && typeof command?.execute === 'function') {
