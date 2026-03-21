@@ -33,6 +33,7 @@ export function createNotasCommand(repo: NoteRepository): ICommand {
               .setNameLocalization('pt-BR', 'conteudo')
               .setDescription('Note content')
               .setDescriptionLocalization('pt-BR', 'Conteúdo da nota')
+              .setMaxLength(1000)
               .setRequired(true),
           ),
       )
@@ -134,7 +135,8 @@ export function createNotasCommand(repo: NoteRepository): ICommand {
         if (notes.length === 0) {
           embed.setDescription('Nenhuma nota ainda. Use `/notas salvar` para criar uma.');
         } else {
-          embed.setDescription(notes.map((n) => `\`${n.name}\``).join(', '));
+          const rawList = notes.map((n) => `\`${n.name}\``).join(', ');
+          embed.setDescription(rawList.length > 4000 ? rawList.slice(0, 4000) + '…' : rawList);
         }
         await interaction.reply({ embeds: [embed], ephemeral: true });
       }
