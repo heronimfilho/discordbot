@@ -2,9 +2,12 @@ import {
   ActionRowBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   ModalBuilder,
   ModalSubmitInteraction,
   SlashCommandBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuInteraction,
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
@@ -12,7 +15,26 @@ import { ICommand } from '../../types/Command';
 import { CustomCommandService } from '../../services/CustomCommandService';
 import { CustomCommandType } from '../../types/CustomCommand';
 
-const VALID_TYPES: CustomCommandType[] = ['response', 'warning', 'counter'];
+const TYPE_OPTIONS = [
+  {
+    label: 'Resposta',
+    description: 'Responde com texto fixo',
+    value: 'response' as CustomCommandType,
+    emoji: '💬',
+  },
+  {
+    label: 'Aviso',
+    description: 'Responde com um embed amarelo de aviso',
+    value: 'warning' as CustomCommandType,
+    emoji: '⚠️',
+  },
+  {
+    label: 'Contador',
+    description: 'Incrementa um número a cada chamada — use {{counter}} no texto',
+    value: 'counter' as CustomCommandType,
+    emoji: '🔢',
+  },
+];
 
 function buildCommandSlashData() {
   return new SlashCommandBuilder()
@@ -74,6 +96,43 @@ function buildCommandSlashData() {
     );
 }
 
+function buildTypeSelectRow(customId: string, defaultValue?: CustomCommandType) {
+  const select = new StringSelectMenuBuilder()
+    .setCustomId(customId)
+    .setPlaceholder('Escolha o tipo do comando...')
+    .addOptions(
+      TYPE_OPTIONS.map((opt) => ({
+        label: opt.label,
+        description: opt.description,
+        value: opt.value,
+        emoji: opt.emoji,
+        default: opt.value === defaultValue,
+      })),
+    );
+  return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
+}
+
+function buildTextModal(customId: string, title: string, existingText?: string) {
+  const isCounter = customId.includes(':counter:');
+  const textInput = new TextInputBuilder()
+    .setCustomId('text')
+    .setLabel('Texto do comando')
+    .setPlaceholder(
+      isCounter
+        ? 'Variáveis disponíveis: {{counter}} — número atual\nEx: Cachorro latiu {{counter}} vezes!'
+        : 'Digite o texto que será exibido quando o comando for chamado.',
+    )
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
+
+  if (existingText) textInput.setValue(existingText);
+
+  return new ModalBuilder()
+    .setCustomId(customId)
+    .setTitle(title)
+    .addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(textInput));
+}
+
 export function createCommandCommand(service: CustomCommandService): ICommand {
   return {
     data: buildCommandSlashData(),
@@ -81,7 +140,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
       if (!interaction.guildId) {
         await interaction.reply({
-          content: 'This command can only be used in a server.',
+          content: 'Este comando só pode ser usado em um servidor.',
           ephemeral: true,
         });
         return;
@@ -95,36 +154,17 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         const existing = service.findByName(interaction.guildId, name);
         if (existing) {
           await interaction.reply({
-            content: `A command named \`/${name}\` already exists.`,
+            content: `Já existe um comando chamado \`/${name}\`.`,
             ephemeral: true,
           });
           return;
         }
 
-        const modal = new ModalBuilder()
-          .setCustomId(`custom_command_add:${name}`)
-          .setTitle('Create Custom Command');
-
-        const typeInput = new TextInputBuilder()
-          .setCustomId('type')
-          .setLabel('Type (response / warning / counter)')
-          .setPlaceholder('response')
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true);
-
-        const textInput = new TextInputBuilder()
-          .setCustomId('text')
-          .setLabel('Response text')
-          .setPlaceholder('For counter type, use {{counter}} as placeholder.')
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true);
-
-        modal.addComponents(
-          new ActionRowBuilder<TextInputBuilder>().addComponents(typeInput),
-          new ActionRowBuilder<TextInputBuilder>().addComponents(textInput),
-        );
-
-        await interaction.showModal(modal);
+        await interaction.reply({
+          content: `**Criar comando \`/${name}\`**\nEscolha o tipo:`,
+          components: [buildTypeSelectRow(`cc_type:add:${name}`)],
+          ephemeral: true,
+        });
         return;
       }
 
@@ -133,36 +173,17 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         const existing = service.findByName(interaction.guildId, name);
         if (!existing) {
           await interaction.reply({
-            content: `No command named \`/${name}\` found.`,
+            content: `Nenhum comando chamado \`/${name}\` encontrado.`,
             ephemeral: true,
           });
           return;
         }
 
-        const modal = new ModalBuilder()
-          .setCustomId(`custom_command_edit:${name}`)
-          .setTitle('Edit Custom Command');
-
-        const typeInput = new TextInputBuilder()
-          .setCustomId('type')
-          .setLabel('Type (response / warning / counter)')
-          .setValue(existing.type)
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true);
-
-        const textInput = new TextInputBuilder()
-          .setCustomId('text')
-          .setLabel('Response text')
-          .setValue(existing.text)
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true);
-
-        modal.addComponents(
-          new ActionRowBuilder<TextInputBuilder>().addComponents(typeInput),
-          new ActionRowBuilder<TextInputBuilder>().addComponents(textInput),
-        );
-
-        await interaction.showModal(modal);
+        await interaction.reply({
+          content: `**Editar comando \`/${name}\`**\nEscolha o novo tipo:`,
+          components: [buildTypeSelectRow(`cc_type:edit:${name}`, existing.type)],
+          ephemeral: true,
+        });
         return;
       }
 
@@ -171,12 +192,12 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         try {
           await service.delete(interaction.guildId, name);
           await interaction.reply({
-            content: `Command \`/${name}\` deleted successfully!`,
+            content: `Comando \`/${name}\` deletado com sucesso!`,
             ephemeral: true,
           });
         } catch {
           await interaction.reply({
-            content: `No command named \`/${name}\` found.`,
+            content: `Nenhum comando chamado \`/${name}\` encontrado.`,
             ephemeral: true,
           });
         }
@@ -185,15 +206,18 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
 
       if (sub === 'list') {
         const commands = service.findAllByGuild(interaction.guildId);
-        const embed = new EmbedBuilder().setTitle('Custom Commands').setColor(0x57f287);
+        const typeLabels: Record<CustomCommandType, string> = {
+          response: '💬 Resposta',
+          warning: '⚠️ Aviso',
+          counter: '🔢 Contador',
+        };
+        const embed = new EmbedBuilder().setTitle('Comandos Personalizados').setColor(0x57f287);
 
         if (commands.length === 0) {
-          embed.setDescription(
-            'No custom commands yet. Use `/command add` to create one.',
-          );
+          embed.setDescription('Nenhum comando ainda. Use `/comando adicionar` para criar um.');
         } else {
           embed.setDescription(
-            commands.map((c) => `\`/${c.name}\` — ${c.type}`).join('\n'),
+            commands.map((c) => `\`/${c.name}\` — ${typeLabels[c.type]}`).join('\n'),
           );
         }
 
@@ -203,46 +227,78 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
   };
 }
 
+export async function handleTypeSelect(
+  interaction: StringSelectMenuInteraction,
+  service: CustomCommandService,
+): Promise<void> {
+  const parts = interaction.customId.split(':');
+  const action = parts[1];
+  const name = parts.slice(2).join(':');
+  const type = interaction.values[0] as CustomCommandType;
+
+  if (action === 'add') {
+    const existing = service.findByName(interaction.guildId!, name);
+    if (existing) {
+      await interaction.update({
+        content: `Já existe um comando chamado \`/${name}\`.`,
+        components: [],
+      });
+      return;
+    }
+    await interaction.showModal(
+      buildTextModal(`cc_modal:add:${type}:${name}`, `Criar /${name}`),
+    );
+    return;
+  }
+
+  if (action === 'edit') {
+    const existing = service.findByName(interaction.guildId!, name);
+    await interaction.showModal(
+      buildTextModal(`cc_modal:edit:${type}:${name}`, `Editar /${name}`, existing?.text),
+    );
+  }
+}
+
 export async function handleCommandModal(
   interaction: ModalSubmitInteraction,
   service: CustomCommandService,
 ): Promise<void> {
-  const [action, name] = interaction.customId.split(':');
+  const parts = interaction.customId.split(':');
+  const action = parts[1];
+  const type = parts[2] as CustomCommandType;
+  const name = parts.slice(3).join(':');
+
   const guildId = interaction.guildId;
   if (!guildId) {
-    await interaction.reply({ content: 'This command can only be used in a server.', ephemeral: true });
-    return;
-  }
-  const typeRaw = interaction.fields.getTextInputValue('type').trim().toLowerCase();
-  const text = interaction.fields.getTextInputValue('text').trim();
-
-  if (!VALID_TYPES.includes(typeRaw as CustomCommandType)) {
     await interaction.reply({
-      content: 'Invalid type. Use: response, warning, or counter.',
+      content: 'Este comando só pode ser usado em um servidor.',
       ephemeral: true,
     });
     return;
   }
 
-  const type = typeRaw as CustomCommandType;
+  const text = interaction.fields.getTextInputValue('text').trim();
 
   try {
-    if (action === 'custom_command_add') {
+    if (action === 'add') {
       await service.create({ guild_id: guildId, name, type, text });
       await interaction.reply({
-        content: `Command \`/${name}\` created successfully!`,
+        content: `Comando \`/${name}\` criado com sucesso!`,
         ephemeral: true,
       });
-    } else if (action === 'custom_command_edit') {
+    } else if (action === 'edit') {
       service.update(guildId, name, { type, text });
       await interaction.reply({
-        content: `Command \`/${name}\` updated successfully!`,
+        content: `Comando \`/${name}\` atualizado com sucesso!`,
         ephemeral: true,
       });
     } else {
-      await interaction.reply({ content: 'Unknown action.', ephemeral: true });
+      await interaction.reply({ content: 'Ação desconhecida.', ephemeral: true });
     }
   } catch {
-    await interaction.reply({ content: 'An error occurred.', ephemeral: true });
+    await interaction.reply({
+      content: 'Ocorreu um erro ao processar o comando.',
+      ephemeral: true,
+    });
   }
 }
