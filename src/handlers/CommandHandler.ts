@@ -6,6 +6,7 @@ import { CustomCommandService } from '../services/CustomCommandService';
 import { createCommandCommand } from '../commands/custom/command';
 import { NoteRepository } from '../database/repositories/NoteRepository';
 import { createNotasCommand } from '../commands/utility/notas';
+import { createHelpCommand } from '../commands/utility/help';
 
 export class CommandHandler {
   readonly commands = new Collection<string, ICommand>();
@@ -24,6 +25,7 @@ export class CommandHandler {
       .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
 
     for (const file of files) {
+      if (file === 'help.ts' || file === 'help.js') continue; // registered manually below
       const module = await import(path.join(utilityDir, file)) as Record<string, unknown>;
       for (const exportedValue of Object.values(module)) {
         const command = exportedValue as ICommand;
@@ -33,12 +35,16 @@ export class CommandHandler {
       }
     }
 
-    // Register custom command manager
+    // Register factory commands
     const commandCommand = createCommandCommand(this.customCommandService);
     this.commands.set(commandCommand.data.name, commandCommand);
 
     const notasCommand = createNotasCommand(this.noteRepository);
     this.commands.set(notasCommand.data.name, notasCommand);
+
+    // Help must be last so it captures all built-in commands
+    const helpCommand = createHelpCommand(this.commands, this.customCommandService);
+    this.commands.set(helpCommand.data.name, helpCommand);
   }
 
   async register(): Promise<void> {
