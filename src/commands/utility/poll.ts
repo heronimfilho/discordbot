@@ -86,8 +86,12 @@ export const poll: ICommand = {
 
     const message = await interaction.reply({ embeds: [embed], fetchReply: true });
 
-    for (let i = 0; i < options.length; i++) {
-      await message.react(EMOJI_OPTIONS[i]);
+    try {
+      for (let i = 0; i < options.length; i++) {
+        await message.react(EMOJI_OPTIONS[i]);
+      }
+    } catch {
+      console.warn('[poll] Failed to add reactions — missing permissions?');
     }
   },
 };
