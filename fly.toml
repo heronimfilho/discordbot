@@ -1,0 +1,13 @@
+app = "herodll-bot-discord"
+primary_region = "gru"
+
+[build]
+
+[mounts]
+  source = "bot_data"
+  destination = "/app/data"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
