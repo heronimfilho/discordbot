@@ -4,6 +4,8 @@ import path from 'path';
 import { ICommand } from '../types/Command';
 import { CustomCommandService } from '../services/CustomCommandService';
 import { createCommandCommand } from '../commands/custom/command';
+import { NoteRepository } from '../database/repositories/NoteRepository';
+import { createNotasCommand } from '../commands/utility/notas';
 
 export class CommandHandler {
   readonly commands = new Collection<string, ICommand>();
@@ -11,6 +13,7 @@ export class CommandHandler {
   constructor(
     private readonly client: Client,
     private readonly customCommandService: CustomCommandService,
+    private readonly noteRepository: NoteRepository,
   ) {}
 
   async load(): Promise<void> {
@@ -33,6 +36,9 @@ export class CommandHandler {
     // Register custom command manager
     const commandCommand = createCommandCommand(this.customCommandService);
     this.commands.set(commandCommand.data.name, commandCommand);
+
+    const notasCommand = createNotasCommand(this.noteRepository);
+    this.commands.set(notasCommand.data.name, notasCommand);
   }
 
   async register(): Promise<void> {
