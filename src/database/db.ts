@@ -25,6 +25,17 @@ try {
       updated_at TEXT    NOT NULL DEFAULT (datetime('now')),
       UNIQUE(guild_id, name)
     );
+
+    CREATE TABLE IF NOT EXISTS notes (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_id   TEXT    NOT NULL,
+      name       TEXT    NOT NULL,
+      content    TEXT    NOT NULL,
+      created_by TEXT    NOT NULL,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(guild_id, name)
+    );
   `);
 } catch (error) {
   throw new Error(`Failed to initialize database schema: ${error instanceof Error ? error.message : String(error)}`);
