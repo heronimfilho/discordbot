@@ -68,6 +68,22 @@ export const roll: ICommand = {
       return;
     }
 
+    if (config.sides > 1000) {
+      await interaction.reply({
+        content: '❌ Máximo de 1000 lados por dado.',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (Math.abs(config.modifier) > 10000) {
+      await interaction.reply({
+        content: '❌ Modificador máximo é ±10000.',
+        ephemeral: true,
+      });
+      return;
+    }
+
     const result = rollDice(config);
     const rollsStr = result.rolls.join(', ');
     const modStr =
@@ -78,7 +94,7 @@ export const roll: ICommand = {
           : '';
 
     const lines = [
-      `🎲 **${interaction.user.displayName ?? interaction.user.username}** rolou \`${input}\``,
+      `🎲 **${interaction.user.globalName ?? interaction.user.username}** rolou \`${input}\``,
       `Resultados: [${rollsStr}]${modStr}`,
     ];
 
