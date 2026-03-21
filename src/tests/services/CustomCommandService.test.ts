@@ -36,7 +36,7 @@ describe('CustomCommandService', () => {
   });
 
   it('resolves counter text with current count', () => {
-    const cmd = { type: 'counter', text: 'Latidos: {count}', counter: 5 } as CustomCommand;
+    const cmd = { type: 'counter', text: 'Latidos: {{counter}}', counter: 5 } as CustomCommand;
     const result = service.resolveText(cmd);
     expect(result).toBe('Latidos: 5');
   });

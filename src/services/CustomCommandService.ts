@@ -51,7 +51,7 @@ export class CustomCommandService {
 
   resolveText(cmd: CustomCommand): string {
     if (cmd.type === 'counter') {
-      return cmd.text.replace('{count}', String(cmd.counter));
+      return cmd.text.replace('{{counter}}', String(cmd.counter));
     }
     return cmd.text;
   }

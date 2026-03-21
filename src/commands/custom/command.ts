@@ -115,7 +115,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         const textInput = new TextInputBuilder()
           .setCustomId('text')
           .setLabel('Response text')
-          .setPlaceholder('For counter type, use {count} as placeholder.')
+          .setPlaceholder('For counter type, use {{counter}} as placeholder.')
           .setStyle(TextInputStyle.Paragraph)
           .setRequired(true);
 
