@@ -3,3 +3,21 @@ dist/
 .env
 data/
 *.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# TypeScript incremental build
+*.tsbuildinfo
