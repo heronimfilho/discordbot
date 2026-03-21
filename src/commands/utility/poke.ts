@@ -24,7 +24,7 @@ export const poke: ICommand = {
     const target = interaction.options.getUser('user', true);
     const poker = interaction.member as GuildMember;
     const pokerName = poker?.displayName ?? interaction.user.username;
-    const targetName = target.displayName ?? target.username;
+    const targetName = target.globalName ?? target.username;
     await interaction.reply(`👉 **${pokerName}** poked **${targetName}**!`);
   },
 };

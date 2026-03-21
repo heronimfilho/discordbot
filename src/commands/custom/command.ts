@@ -89,7 +89,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
 
       const sub = interaction.options.getSubcommand();
 
-      if (sub === 'add' || sub === 'adicionar') {
+      if (sub === 'add') {
         const name = interaction.options.getString('name', true).toLowerCase();
 
         const existing = service.findByName(interaction.guildId, name);
@@ -128,7 +128,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         return;
       }
 
-      if (sub === 'edit' || sub === 'editar') {
+      if (sub === 'edit') {
         const name = interaction.options.getString('name', true).toLowerCase();
         const existing = service.findByName(interaction.guildId, name);
         if (!existing) {
@@ -166,7 +166,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         return;
       }
 
-      if (sub === 'delete' || sub === 'deletar') {
+      if (sub === 'delete') {
         const name = interaction.options.getString('name', true).toLowerCase();
         try {
           await service.delete(interaction.guildId, name);
@@ -183,7 +183,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         return;
       }
 
-      if (sub === 'list' || sub === 'listar') {
+      if (sub === 'list') {
         const commands = service.findAllByGuild(interaction.guildId);
         const embed = new EmbedBuilder().setTitle('Custom Commands').setColor(0x57f287);
 
@@ -208,7 +208,11 @@ export async function handleCommandModal(
   service: CustomCommandService,
 ): Promise<void> {
   const [action, name] = interaction.customId.split(':');
-  const guildId = interaction.guildId!;
+  const guildId = interaction.guildId;
+  if (!guildId) {
+    await interaction.reply({ content: 'This command can only be used in a server.', ephemeral: true });
+    return;
+  }
   const typeRaw = interaction.fields.getTextInputValue('type').trim().toLowerCase();
   const text = interaction.fields.getTextInputValue('text').trim();
 
@@ -235,6 +239,8 @@ export async function handleCommandModal(
         content: `Command \`/${name}\` updated successfully!`,
         ephemeral: true,
       });
+    } else {
+      await interaction.reply({ content: 'Unknown action.', ephemeral: true });
     }
   } catch {
     await interaction.reply({ content: 'An error occurred.', ephemeral: true });
