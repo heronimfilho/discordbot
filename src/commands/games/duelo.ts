@@ -92,7 +92,7 @@ export function createDueloCommand(
         .setDescription(
           `**${challengerName}** desafiou **${challengedName}** para um duelo!\n\n` +
             `Aposta: ${betDescription}\n` +
-            `${challenged}, você aceita o desafio?`,
+            `<@${challenged.id}>, você aceita o desafio?`,
         )
         .setColor(0xe67e22)
         .setFooter({ text: 'Este desafio expira em 5 minutos.' });
