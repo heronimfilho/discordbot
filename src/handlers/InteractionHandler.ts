@@ -1,9 +1,16 @@
-import { Client, EmbedBuilder, Events, Interaction, InteractionReplyOptions, MessageFlags } from 'discord.js';
-import { CommandHandler } from './CommandHandler';
-import { CustomCommandService } from '../services/CustomCommandService';
+import {
+  Client,
+  EmbedBuilder,
+  Events,
+  Interaction,
+  InteractionReplyOptions,
+  MessageFlags,
+} from 'discord.js';
 import { handleCommandModal, handleTypeSelect } from '../commands/custom/command';
-import { PointsService } from '../services/PointsService';
 import { PendingDuelRepository } from '../database/repositories/PendingDuelRepository';
+import { CustomCommandService } from '../services/CustomCommandService';
+import { PointsService } from '../services/PointsService';
+import { CommandHandler } from './CommandHandler';
 
 export class InteractionHandler {
   constructor(
@@ -81,7 +88,6 @@ export class InteractionHandler {
               return;
             }
 
-            // Accept
             const challengedBalance = this.pointsService.getBalance(duel.guild_id, user.id);
             const requiredAmount = duel.is_all_in ? 50 : duel.amount;
             if (challengedBalance < requiredAmount) {
@@ -92,6 +98,7 @@ export class InteractionHandler {
               return;
             }
 
+            // é 50/50 viu?????
             const winnerId = Math.random() < 0.5 ? duel.challenger_id : duel.challenged_id;
             const result = this.pointsService.resolveDuel(duelId, winnerId);
 
