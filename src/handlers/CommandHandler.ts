@@ -103,9 +103,18 @@ export class CommandHandler {
     await rest.put(Routes.applicationCommands(env.DISCORD_CLIENT_ID), { body: [] });
 
     await Promise.all(
-      guilds.map((guild) =>
-        rest.put(Routes.applicationGuildCommands(env.DISCORD_CLIENT_ID, guild.id), { body: commandData }),
-      ),
+      guilds.map(async (guild) => {
+        const customCmds = this.customCommandService.findAllByGuild(guild.id);
+        const customData = customCmds.map((c) => ({
+          name: c.name,
+          description: `Comando personalizado: ${c.name}`,
+          type: 1,
+        }));
+        await rest.put(
+          Routes.applicationGuildCommands(env.DISCORD_CLIENT_ID, guild.id),
+          { body: [...commandData, ...customData] },
+        );
+      }),
     );
     console.log(`Registered ${commandData.length} application commands in ${guilds.length} guild(s).`);
   }
