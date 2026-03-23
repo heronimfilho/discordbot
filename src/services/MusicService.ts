@@ -5,6 +5,7 @@ import {
   VoiceConnectionStatus,
   createAudioPlayer,
   createAudioResource,
+  entersState,
   joinVoiceChannel,
 } from '@discordjs/voice';
 import { VoiceBasedChannel } from 'discord.js';
@@ -80,7 +81,18 @@ export class MusicService {
     });
 
     connection.on(VoiceConnectionStatus.Disconnected, () => {
-      this.cleanup(guildId);
+      void (async () => {
+        try {
+          // Se reconectar em até 5s, ignora (desconexão transitória)
+          await Promise.race([
+            entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+            entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+          ]);
+        } catch {
+          // Desconexão real — limpa o estado
+          this.cleanup(guildId);
+        }
+      })();
     });
 
     state.queue.push(track);
