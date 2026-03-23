@@ -10,7 +10,14 @@ export function createFilaCommand(musicService: MusicService): ICommand {
       .setDescription('Ver a fila de músicas')
       .setDescriptionLocalization('en-US', 'View the music queue'),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const guildId = interaction.guildId ?? '';
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+      const guildId = interaction.guildId;
       const current = musicService.getCurrentTrack(guildId);
       if (!current) {
         await interaction.reply({ content: '❌ Nenhuma música tocando no momento.', flags: MessageFlags.Ephemeral });

@@ -19,8 +19,15 @@ export function createVolumeCommand(musicService: MusicService): ICommand {
           .setRequired(true),
       ),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
       const level = interaction.options.getInteger('nivel', true);
-      const set = musicService.setVolume(interaction.guildId ?? '', level);
+      const set = musicService.setVolume(interaction.guildId, level);
       if (set) {
         await interaction.reply(`🔊 Volume ajustado para **${level}%**.`);
       } else {

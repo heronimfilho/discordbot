@@ -85,7 +85,14 @@ export function createTocarCommand(musicService: MusicService): ICommand {
         requestedBy: interaction.user.globalName ?? interaction.user.username,
       };
 
-      const result = await musicService.playOrEnqueue(voiceChannel, track);
+      let result: 'playing' | 'queued';
+      try {
+        result = await musicService.playOrEnqueue(voiceChannel, track);
+      } catch (err) {
+        console.error('[/tocar] Failed to join voice channel or start playback:', err);
+        await interaction.editReply('❌ Não foi possível entrar no canal de voz ou iniciar a reprodução.');
+        return;
+      }
 
       const embed = new EmbedBuilder().setColor(0x1db954);
       if (result === 'playing') {

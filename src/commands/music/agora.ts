@@ -10,7 +10,14 @@ export function createAgoraCommand(musicService: MusicService): ICommand {
       .setDescription('Ver a música tocando agora')
       .setDescriptionLocalization('en-US', 'Show the currently playing song'),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const guildId = interaction.guildId ?? '';
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+      const guildId = interaction.guildId;
       const track = musicService.getCurrentTrack(guildId);
       if (!track) {
         await interaction.reply({ content: '❌ Nenhuma música tocando no momento.', flags: MessageFlags.Ephemeral });
@@ -20,7 +27,7 @@ export function createAgoraCommand(musicService: MusicService): ICommand {
       const embed = new EmbedBuilder()
         .setTitle('▶️ Tocando agora')
         .setDescription(`**${track.title}**\nDuração: \`${track.duration}\`\nPedido por: ${track.requestedBy}`)
-        .setFooter({ text: `Volume: ${musicService.getVolume(guildId)}% | Loop: ${loopLabel}` })
+        .setFooter({ text: `Loop: ${loopLabel} | Volume: ${musicService.getVolume(guildId)}%` })
         .setColor(0x1db954);
       await interaction.reply({ embeds: [embed] });
     },

@@ -154,7 +154,7 @@ export class MusicService {
 
   clearQueue(guildId: string): boolean {
     const state = this.states.get(guildId);
-    if (!state) return false;
+    if (!state || state.queue.length === 0) return false;
     state.queue = [];
     return true;
   }

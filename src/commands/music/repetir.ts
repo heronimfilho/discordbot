@@ -10,7 +10,14 @@ export function createRepetirCommand(musicService: MusicService): ICommand {
       .setDescription('Alternar modo de repetição: desligado → música → fila')
       .setDescriptionLocalization('en-US', 'Cycle loop mode: off → track → queue'),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const mode = musicService.cycleLoopMode(interaction.guildId ?? '');
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+      const mode = musicService.cycleLoopMode(interaction.guildId);
       if (!mode) {
         await interaction.reply({ content: '❌ Não há nada tocando no momento.', flags: MessageFlags.Ephemeral });
         return;

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { ICommand } from '../../types/Command';
 import { MusicService } from '../../services/MusicService';
 
@@ -10,8 +10,19 @@ export function createEmbaralharCommand(musicService: MusicService): ICommand {
       .setDescription('Embaralhar a fila de músicas')
       .setDescriptionLocalization('en-US', 'Shuffle the music queue'),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-      const shuffled = musicService.shuffle(interaction.guildId ?? '');
-      await interaction.reply(shuffled ? '🔀 Fila embaralhada!' : '❌ Não há músicas na fila para embaralhar.');
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+      const shuffled = musicService.shuffle(interaction.guildId);
+      if (shuffled) {
+        await interaction.reply('🔀 Fila embaralhada!');
+      } else {
+        await interaction.reply({ content: '❌ Não há músicas na fila para embaralhar.', flags: MessageFlags.Ephemeral });
+      }
     },
   };
 }

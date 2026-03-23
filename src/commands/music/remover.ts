@@ -19,8 +19,15 @@ export function createRemoverCommand(musicService: MusicService): ICommand {
           .setRequired(true),
       ),
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+      if (!interaction.guildId) {
+        await interaction.reply({
+          content: '❌ Este comando só pode ser usado em um servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
       const position = interaction.options.getInteger('posicao', true);
-      const removed = musicService.removeFromQueue(interaction.guildId ?? '', position);
+      const removed = musicService.removeFromQueue(interaction.guildId, position);
       if (removed) {
         await interaction.reply(`🗑️ Removido da fila: **${removed.title}**`);
       } else {
