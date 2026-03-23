@@ -67,7 +67,7 @@ export function createTocarCommand(musicService: MusicService): ICommand {
             await interaction.editReply('❌ Nenhum resultado encontrado para essa busca.');
             return;
           }
-          const video = results[0]!;
+          const video = results[0];
           trackUrl = video.url;
           trackTitle = video.title ?? 'Título desconhecido';
           trackDuration = formatDuration(video.durationInSec ?? 0);
