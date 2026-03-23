@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createAgoraCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('agora')
       .setNameLocalization('en-US', 'nowplaying')

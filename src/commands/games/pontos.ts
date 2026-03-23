@@ -12,6 +12,7 @@ import { PointsService } from '../../services/PointsService';
 
 export function createPontosCommand(service: PointsService): ICommand {
   return {
+    category: 'pontos',
     data: new SlashCommandBuilder()
       .setName('pontos')
       .setDescription('Ver seu saldo de pontos')

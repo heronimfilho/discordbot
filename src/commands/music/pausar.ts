@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createPausarCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('pausar')
       .setNameLocalization('en-US', 'pause')

@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createPularCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('pular')
       .setNameLocalization('en-US', 'skip')

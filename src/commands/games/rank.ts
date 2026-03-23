@@ -8,6 +8,7 @@ import { PointsService } from '../../services/PointsService';
 
 export function createRankCommand(service: PointsService): ICommand {
   return {
+    category: 'pontos',
     data: new SlashCommandBuilder()
       .setName('rank')
       .setDescription('Ver o ranking de pontos do servidor')

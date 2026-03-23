@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { ICommand } from '../../types/Command';
 
 export interface DiceConfig {
@@ -34,17 +34,18 @@ export function rollDice(config: DiceConfig): RollResult {
 }
 
 export const roll: ICommand = {
+  category: 'utilidade',
   data: new SlashCommandBuilder()
     .setName('roll')
     .setNameLocalization('pt-BR', 'rolar')
-    .setDescription('Roll dice using standard notation (e.g. 2d6, 1d20+5)')
-    .setDescriptionLocalization('pt-BR', 'Rola dados com notação padrão (ex: 2d6, 1d20+5)')
+    .setDescription('Rola dados com notação padrão (ex: 2d6, 1d20+5)')
+    .setDescriptionLocalization('en-US', 'Roll dice using standard notation (e.g. 2d6, 1d20+5)')
     .addStringOption((opt) =>
       opt
         .setName('dice')
         .setNameLocalization('pt-BR', 'dados')
-        .setDescription('Dice notation: NdS+M (e.g. 2d6, 1d20+5, d8-1)')
-        .setDescriptionLocalization('pt-BR', 'Notação: NdS+M (ex: 2d6, 1d20+5, d8-1)')
+        .setDescription('Notação: NdS+M (ex: 2d6, 1d20+5, d8-1)')
+        .setDescriptionLocalization('en-US', 'Dice notation: NdS+M (e.g. 2d6, 1d20+5, d8-1)')
         .setRequired(true),
     ),
 
@@ -55,7 +56,7 @@ export const roll: ICommand = {
     if (!config) {
       await interaction.reply({
         content: '❌ Notação inválida. Use o formato `NdS+M` — ex: `2d6`, `1d20+5`, `d8-1`.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -63,7 +64,7 @@ export const roll: ICommand = {
     if (config.count > 100) {
       await interaction.reply({
         content: '❌ Máximo de 100 dados por vez.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -71,7 +72,7 @@ export const roll: ICommand = {
     if (config.sides > 1000) {
       await interaction.reply({
         content: '❌ Máximo de 1000 lados por dado.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -79,7 +80,7 @@ export const roll: ICommand = {
     if (Math.abs(config.modifier) > 10000) {
       await interaction.reply({
         content: '❌ Modificador máximo é ±10000.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }

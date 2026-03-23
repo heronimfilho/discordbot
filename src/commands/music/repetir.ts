@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createRepetirCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('repetir')
       .setNameLocalization('en-US', 'loop')

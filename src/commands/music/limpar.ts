@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createLimparCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('limpar')
       .setNameLocalization('en-US', 'clearqueue')

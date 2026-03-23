@@ -17,16 +17,17 @@ export const EIGHT_BALL_RESPONSES = [
 ];
 
 export const eightball: ICommand = {
+  category: 'diversão',
   data: new SlashCommandBuilder()
     .setName('8ball')
-    .setDescription('Ask the magic 8-ball a question')
-    .setDescriptionLocalization('pt-BR', 'Pergunte algo à bola mágica')
+    .setDescription('Pergunte algo à bola mágica')
+    .setDescriptionLocalization('en-US', 'Ask the magic 8-ball a question')
     .addStringOption((opt) =>
       opt
         .setName('question')
         .setNameLocalization('pt-BR', 'pergunta')
-        .setDescription('Your question')
-        .setDescriptionLocalization('pt-BR', 'Sua pergunta')
+        .setDescription('Sua pergunta')
+        .setDescriptionLocalization('en-US', 'Your question')
         .setRequired(true),
     ),
 

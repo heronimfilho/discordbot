@@ -8,57 +8,58 @@ import { ICommand } from '../../types/Command';
 const EMOJI_OPTIONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
 
 export const poll: ICommand = {
+  category: 'utilidade',
   data: new SlashCommandBuilder()
     .setName('poll')
     .setNameLocalization('pt-BR', 'enquete')
-    .setDescription('Create a poll with up to 5 options')
-    .setDescriptionLocalization('pt-BR', 'Cria uma enquete com até 5 opções')
+    .setDescription('Criar uma enquete com até 5 opções')
+    .setDescriptionLocalization('en-US', 'Create a poll with up to 5 options')
     .addStringOption((opt) =>
       opt
         .setName('question')
         .setNameLocalization('pt-BR', 'pergunta')
-        .setDescription('The poll question')
-        .setDescriptionLocalization('pt-BR', 'A pergunta da enquete')
+        .setDescription('A pergunta da enquete')
+        .setDescriptionLocalization('en-US', 'The poll question')
         .setRequired(true),
     )
     .addStringOption((opt) =>
       opt
         .setName('option1')
         .setNameLocalization('pt-BR', 'opcao1')
-        .setDescription('Option 1')
-        .setDescriptionLocalization('pt-BR', 'Opção 1')
+        .setDescription('Opção 1')
+        .setDescriptionLocalization('en-US', 'Option 1')
         .setRequired(true),
     )
     .addStringOption((opt) =>
       opt
         .setName('option2')
         .setNameLocalization('pt-BR', 'opcao2')
-        .setDescription('Option 2')
-        .setDescriptionLocalization('pt-BR', 'Opção 2')
+        .setDescription('Opção 2')
+        .setDescriptionLocalization('en-US', 'Option 2')
         .setRequired(true),
     )
     .addStringOption((opt) =>
       opt
         .setName('option3')
         .setNameLocalization('pt-BR', 'opcao3')
-        .setDescription('Option 3 (optional)')
-        .setDescriptionLocalization('pt-BR', 'Opção 3 (opcional)')
+        .setDescription('Opção 3 (opcional)')
+        .setDescriptionLocalization('en-US', 'Option 3 (optional)')
         .setRequired(false),
     )
     .addStringOption((opt) =>
       opt
         .setName('option4')
         .setNameLocalization('pt-BR', 'opcao4')
-        .setDescription('Option 4 (optional)')
-        .setDescriptionLocalization('pt-BR', 'Opção 4 (opcional)')
+        .setDescription('Opção 4 (opcional)')
+        .setDescriptionLocalization('en-US', 'Option 4 (optional)')
         .setRequired(false),
     )
     .addStringOption((opt) =>
       opt
         .setName('option5')
         .setNameLocalization('pt-BR', 'opcao5')
-        .setDescription('Option 5 (optional)')
-        .setDescriptionLocalization('pt-BR', 'Opção 5 (opcional)')
+        .setDescription('Opção 5 (opcional)')
+        .setDescriptionLocalization('en-US', 'Option 5 (optional)')
         .setRequired(false),
     ),
 
@@ -91,7 +92,7 @@ export const poll: ICommand = {
         await message.react(EMOJI_OPTIONS[i]);
       }
     } catch {
-      console.warn('[poll] Failed to add reactions — missing permissions?');
+      console.warn('[poll] Falha ao adicionar reações — permissões insuficientes?');
     }
   },
 };

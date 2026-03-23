@@ -22,22 +22,23 @@ export function resolveRPS(player: RPSMove, bot: RPSMove): 'win' | 'lose' | 'dra
 }
 
 export const rps: ICommand = {
+  category: 'diversão',
   data: new SlashCommandBuilder()
     .setName('rps')
     .setNameLocalization('pt-BR', 'pedra-papel-tesoura')
-    .setDescription('Play rock, paper, scissors against the bot')
-    .setDescriptionLocalization('pt-BR', 'Jogar pedra, papel, tesoura contra o bot')
+    .setDescription('Jogar pedra, papel, tesoura contra o bot')
+    .setDescriptionLocalization('en-US', 'Play rock, paper, scissors against the bot')
     .addStringOption((opt) =>
       opt
         .setName('choice')
         .setNameLocalization('pt-BR', 'escolha')
-        .setDescription('Your move')
-        .setDescriptionLocalization('pt-BR', 'Sua jogada')
+        .setDescription('Sua jogada')
+        .setDescriptionLocalization('en-US', 'Your move')
         .setRequired(true)
         .addChoices(
-          { name: '🪨 Rock / Pedra', value: 'rock' },
-          { name: '📄 Paper / Papel', value: 'paper' },
-          { name: '✂️ Scissors / Tesoura', value: 'scissors' },
+          { name: '🪨 Pedra', value: 'rock' },
+          { name: '📄 Papel', value: 'paper' },
+          { name: '✂️ Tesoura', value: 'scissors' },
         ),
     ),
 

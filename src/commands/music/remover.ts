@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createRemoverCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('remover')
       .setNameLocalization('en-US', 'remove')

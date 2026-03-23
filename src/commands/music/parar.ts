@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createPararCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('parar')
       .setNameLocalization('en-US', 'stop')

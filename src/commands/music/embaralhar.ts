@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createEmbaralharCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('embaralhar')
       .setNameLocalization('en-US', 'shuffle')

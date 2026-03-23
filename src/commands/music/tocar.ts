@@ -16,6 +16,7 @@ function formatDuration(totalSeconds: number): string {
 
 export function createTocarCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('tocar')
       .setNameLocalization('en-US', 'play')

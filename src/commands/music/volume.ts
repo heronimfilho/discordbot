@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createVolumeCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('volume')
       .setDescription('Ajustar o volume da música (0–100)')

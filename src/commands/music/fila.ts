@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createFilaCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('fila')
       .setNameLocalization('en-US', 'queue')

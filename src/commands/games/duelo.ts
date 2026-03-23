@@ -3,19 +3,20 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ChatInputCommandInteraction,
-  MessageFlags,
   EmbedBuilder,
+  MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import { ICommand } from '../../types/Command';
-import { PointsService } from '../../services/PointsService';
 import { PendingDuelRepository } from '../../database/repositories/PendingDuelRepository';
+import { PointsService } from '../../services/PointsService';
+import { ICommand } from '../../types/Command';
 
 export function createDueloCommand(
   service: PointsService,
   duelRepo: PendingDuelRepository,
 ): ICommand {
   return {
+    category: 'pontos',
     data: new SlashCommandBuilder()
       .setName('duelo')
       .setDescription('Desafiar um usuário para um duelo de pontos')
@@ -88,7 +89,7 @@ export function createDueloCommand(
         : `**${amount}** pontos cada`;
 
       const embed = new EmbedBuilder()
-        .setTitle('⚔️ Desafio de Duelo!')
+        .setTitle('⚔️ Duelo!')
         .setDescription(
           `**${challengerName}** desafiou **${challengedName}** para um duelo!\n\n` +
             `Aposta: ${betDescription}\n` +
@@ -108,7 +109,11 @@ export function createDueloCommand(
           .setStyle(ButtonStyle.Danger),
       );
 
-      const message = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
+      const message = await interaction.reply({
+        embeds: [embed],
+        components: [row],
+        fetchReply: true,
+      });
 
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
       const duelId = duelRepo.create({
@@ -122,7 +127,6 @@ export function createDueloCommand(
         expires_at: expiresAt,
       });
 
-      // Update button customIds with the real duelId
       const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId(`duel_accept:${duelId}`)

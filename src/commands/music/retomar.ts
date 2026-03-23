@@ -4,6 +4,7 @@ import { MusicService } from '../../services/MusicService';
 
 export function createRetomarCommand(musicService: MusicService): ICommand {
   return {
+    category: 'música',
     data: new SlashCommandBuilder()
       .setName('retomar')
       .setNameLocalization('en-US', 'resume')

@@ -6,17 +6,18 @@ import {
 import { ICommand } from '../../types/Command';
 
 export const poke: ICommand = {
+  category: 'utilidade',
   data: new SlashCommandBuilder()
     .setName('poke')
     .setNameLocalization('pt-BR', 'cutucar')
-    .setDescription('Poke another user')
-    .setDescriptionLocalization('pt-BR', 'Cutucar outro usuário')
+    .setDescription('Cutucar outro usuário')
+    .setDescriptionLocalization('en-US', 'Poke another user')
     .addUserOption((option) =>
       option
         .setName('user')
         .setNameLocalization('pt-BR', 'usuario')
-        .setDescription('The user to poke')
-        .setDescriptionLocalization('pt-BR', 'O usuário a cutucar')
+        .setDescription('O usuário a cutucar')
+        .setDescriptionLocalization('en-US', 'The user to poke')
         .setRequired(true),
     ),
 
@@ -25,6 +26,6 @@ export const poke: ICommand = {
     const poker = interaction.member as GuildMember;
     const pokerName = poker?.displayName ?? interaction.user.username;
     const targetName = target.globalName ?? target.username;
-    await interaction.reply(`👉 **${pokerName}** poked **${targetName}**!`);
+    await interaction.reply(`👉 **${pokerName}** cutucou **${targetName}**!`);
   },
 };

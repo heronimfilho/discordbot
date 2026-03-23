@@ -2,6 +2,7 @@ import {
   ActionRowBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  MessageFlags,
   ModalBuilder,
   ModalSubmitInteraction,
   SlashCommandBuilder,
@@ -39,20 +40,20 @@ function buildCommandSlashData() {
   return new SlashCommandBuilder()
     .setName('command')
     .setNameLocalization('pt-BR', 'comando')
-    .setDescription('Manage custom commands')
-    .setDescriptionLocalization('pt-BR', 'Gerenciar comandos personalizados')
+    .setDescription('Gerenciar comandos personalizados')
+    .setDescriptionLocalization('en-US', 'Manage custom commands')
     .addSubcommand((sub) =>
       sub
         .setName('add')
         .setNameLocalization('pt-BR', 'adicionar')
-        .setDescription('Add a new custom command')
-        .setDescriptionLocalization('pt-BR', 'Adicionar um novo comando personalizado')
+        .setDescription('Adicionar um novo comando personalizado')
+        .setDescriptionLocalization('en-US', 'Add a new custom command')
         .addStringOption((opt) =>
           opt
             .setName('name')
             .setNameLocalization('pt-BR', 'nome')
-            .setDescription('Command name')
-            .setDescriptionLocalization('pt-BR', 'Nome do comando')
+            .setDescription('Nome do comando')
+            .setDescriptionLocalization('en-US', 'Command name')
             .setRequired(true),
         ),
     )
@@ -60,14 +61,14 @@ function buildCommandSlashData() {
       sub
         .setName('edit')
         .setNameLocalization('pt-BR', 'editar')
-        .setDescription('Edit an existing custom command')
-        .setDescriptionLocalization('pt-BR', 'Editar um comando personalizado existente')
+        .setDescription('Editar um comando personalizado existente')
+        .setDescriptionLocalization('en-US', 'Edit an existing custom command')
         .addStringOption((opt) =>
           opt
             .setName('name')
             .setNameLocalization('pt-BR', 'nome')
-            .setDescription('Command name to edit')
-            .setDescriptionLocalization('pt-BR', 'Nome do comando a editar')
+            .setDescription('Nome do comando a editar')
+            .setDescriptionLocalization('en-US', 'Command name to edit')
             .setRequired(true),
         ),
     )
@@ -75,14 +76,14 @@ function buildCommandSlashData() {
       sub
         .setName('delete')
         .setNameLocalization('pt-BR', 'deletar')
-        .setDescription('Delete a custom command')
-        .setDescriptionLocalization('pt-BR', 'Deletar um comando personalizado')
+        .setDescription('Deletar um comando personalizado')
+        .setDescriptionLocalization('en-US', 'Delete a custom command')
         .addStringOption((opt) =>
           opt
             .setName('name')
             .setNameLocalization('pt-BR', 'nome')
-            .setDescription('Command name to delete')
-            .setDescriptionLocalization('pt-BR', 'Nome do comando a deletar')
+            .setDescription('Nome do comando a deletar')
+            .setDescriptionLocalization('en-US', 'Command name to delete')
             .setRequired(true),
         ),
     )
@@ -90,8 +91,8 @@ function buildCommandSlashData() {
       sub
         .setName('list')
         .setNameLocalization('pt-BR', 'listar')
-        .setDescription('List all custom commands')
-        .setDescriptionLocalization('pt-BR', 'Listar todos os comandos personalizados'),
+        .setDescription('Listar todos os comandos personalizados')
+        .setDescriptionLocalization('en-US', 'List all custom commands'),
     );
 }
 
@@ -134,13 +135,14 @@ function buildTextModal(customId: string, title: string, existingText?: string) 
 
 export function createCommandCommand(service: CustomCommandService): ICommand {
   return {
+    category: 'servidor',
     data: buildCommandSlashData(),
 
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
       if (!interaction.guildId) {
         await interaction.reply({
           content: 'Este comando só pode ser usado em um servidor.',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -154,7 +156,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         if (existing) {
           await interaction.reply({
             content: `Já existe um comando chamado \`/${name}\`.`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }
@@ -162,7 +164,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         await interaction.reply({
           content: `**Criar comando \`/${name}\`**\nEscolha o tipo:`,
           components: [buildTypeSelectRow(`cc_type:add:${name}`)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -173,7 +175,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         if (!existing) {
           await interaction.reply({
             content: `Nenhum comando chamado \`/${name}\` encontrado.`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }
@@ -181,7 +183,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
         await interaction.reply({
           content: `**Editar comando \`/${name}\`**\nEscolha o novo tipo:`,
           components: [buildTypeSelectRow(`cc_type:edit:${name}`, existing.type)],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -192,12 +194,12 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
           await service.delete(interaction.guildId, name);
           await interaction.reply({
             content: `Comando \`/${name}\` deletado com sucesso!`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         } catch {
           await interaction.reply({
             content: `Nenhum comando chamado \`/${name}\` encontrado.`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
         return;
@@ -220,7 +222,7 @@ export function createCommandCommand(service: CustomCommandService): ICommand {
           );
         }
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
       }
     },
   };
@@ -271,7 +273,7 @@ export async function handleCommandModal(
   if (!guildId) {
     await interaction.reply({
       content: 'Este comando só pode ser usado em um servidor.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -283,21 +285,24 @@ export async function handleCommandModal(
       await service.create({ guild_id: guildId, name, type, text });
       await interaction.reply({
         content: `Comando \`/${name}\` criado com sucesso!`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else if (action === 'edit') {
       service.update(guildId, name, { type, text });
       await interaction.reply({
         content: `Comando \`/${name}\` atualizado com sucesso!`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
-      await interaction.reply({ content: 'Ação desconhecida.', ephemeral: true });
+      await interaction.reply({
+        content: 'Ação desconhecida.',
+        flags: MessageFlags.Ephemeral,
+      });
     }
   } catch {
     await interaction.reply({
       content: 'Ocorreu um erro ao processar o comando.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }
