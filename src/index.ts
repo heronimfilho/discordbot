@@ -9,6 +9,7 @@ import { InteractionHandler } from './handlers/InteractionHandler';
 import { PointsRepository } from './database/repositories/PointsRepository';
 import { PendingDuelRepository } from './database/repositories/PendingDuelRepository';
 import { PointsService } from './services/PointsService';
+import { MusicService } from './services/MusicService';
 
 async function main() {
   const { env } = await import('./config/env') as { env: { DISCORD_TOKEN: string } };
@@ -20,7 +21,8 @@ async function main() {
   const pointsRepo = new PointsRepository(db);
   const duelRepo = new PendingDuelRepository(db);
   const pointsService = new PointsService(pointsRepo, duelRepo);
-  const commandHandler = new CommandHandler(client, customCommandService, noteRepo, pointsService, duelRepo);
+  const musicService = new MusicService();
+  const commandHandler = new CommandHandler(client, customCommandService, noteRepo, pointsService, duelRepo, musicService);
   const interactionHandler = new InteractionHandler(client, commandHandler, customCommandService, pointsService, duelRepo);
 
   client.once(Events.ClientReady, (readyClient) => {

@@ -12,6 +12,8 @@ import { PendingDuelRepository } from '../database/repositories/PendingDuelRepos
 import { createPontosCommand } from '../commands/games/pontos';
 import { createDueloCommand } from '../commands/games/duelo';
 import { createRankCommand } from '../commands/games/rank';
+import { MusicService } from '../services/MusicService';
+import { createAllMusicCommands } from '../commands/music';
 
 export class CommandHandler {
   readonly commands = new Collection<string, ICommand>();
@@ -22,6 +24,7 @@ export class CommandHandler {
     private readonly noteRepository: NoteRepository,
     private readonly pointsService: PointsService,
     private readonly duelRepository: PendingDuelRepository,
+    private readonly musicService: MusicService,
   ) {}
 
   async load(): Promise<void> {
@@ -64,6 +67,11 @@ export class CommandHandler {
 
     const rankCommand = createRankCommand(this.pointsService);
     this.commands.set(rankCommand.data.name, rankCommand);
+
+    // Music commands
+    for (const cmd of createAllMusicCommands(this.musicService)) {
+      this.commands.set(cmd.data.name, cmd);
+    }
 
     // Help must be last so it captures all built-in commands
     const helpCommand = createHelpCommand(this.commands, this.customCommandService);
