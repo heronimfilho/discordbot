@@ -19,6 +19,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
+RUN apk add --no-cache ffmpeg
+
 COPY --from=builder /app/dist ./dist
 
 RUN mkdir -p data
