@@ -88,4 +88,8 @@ export class PointsService {
   declineDuel(duelId: number): void {
     this.duelRepo.delete(duelId);
   }
+
+  getRanking(guildId: string): { user_id: string; balance: number }[] {
+    return this.pointsRepo.findRankingByGuild(guildId);
+  }
 }

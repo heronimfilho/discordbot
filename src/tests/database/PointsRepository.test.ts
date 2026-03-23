@@ -50,4 +50,14 @@ describe('PointsRepository', () => {
     expect(repo.getBalance('g1', 'winner')).toBe(300);
     expect(repo.getBalance('g1', 'loser')).toBe(0);
   });
+
+  it('returns ranking sorted by balance descending, excluding zero balances', () => {
+    repo.setBalance('g1', 'u1', 500);
+    repo.setBalance('g1', 'u2', 1000);
+    repo.setBalance('g1', 'u3', 0);
+    const ranking = repo.findRankingByGuild('g1');
+    expect(ranking).toHaveLength(2);
+    expect(ranking[0].user_id).toBe('u2');
+    expect(ranking[1].user_id).toBe('u1');
+  });
 });

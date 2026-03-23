@@ -11,6 +11,7 @@ import { PointsService } from '../services/PointsService';
 import { PendingDuelRepository } from '../database/repositories/PendingDuelRepository';
 import { createPontosCommand } from '../commands/games/pontos';
 import { createDueloCommand } from '../commands/games/duelo';
+import { createRankCommand } from '../commands/games/rank';
 
 export class CommandHandler {
   readonly commands = new Collection<string, ICommand>();
@@ -60,6 +61,9 @@ export class CommandHandler {
 
     const dueloCommand = createDueloCommand(this.pointsService, this.duelRepository);
     this.commands.set(dueloCommand.data.name, dueloCommand);
+
+    const rankCommand = createRankCommand(this.pointsService);
+    this.commands.set(rankCommand.data.name, rankCommand);
 
     // Help must be last so it captures all built-in commands
     const helpCommand = createHelpCommand(this.commands, this.customCommandService);

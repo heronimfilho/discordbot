@@ -28,4 +28,12 @@ export class PointsRepository {
     });
     xfer();
   }
+
+  findRankingByGuild(guildId: string): { user_id: string; balance: number }[] {
+    return this.db
+      .prepare(
+        `SELECT user_id, balance FROM points WHERE guild_id = ? AND balance > 0 ORDER BY balance DESC LIMIT 10`,
+      )
+      .all(guildId) as { user_id: string; balance: number }[];
+  }
 }
