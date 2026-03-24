@@ -1,6 +1,8 @@
+import { spawn } from 'child_process';
 import {
   AudioPlayer,
   AudioPlayerStatus,
+  StreamType,
   VoiceConnection,
   VoiceConnectionStatus,
   createAudioPlayer,
@@ -9,7 +11,7 @@ import {
   joinVoiceChannel,
 } from '@discordjs/voice';
 import { VoiceBasedChannel } from 'discord.js';
-import play from 'play-dl';
+import { getStreamUrl } from './YtDlpService';
 
 export type LoopMode = 'off' | 'track' | 'queue';
 
@@ -191,15 +193,34 @@ export class MusicService {
     state.currentTrack = next;
 
     try {
-      const stream = await play.stream(next.url, { quality: 1 });
-      const resource = createAudioResource(stream.stream, {
-        inputType: stream.type,
+      const streamUrl = await getStreamUrl(next.url);
+      if (!streamUrl) {
+        console.error('[MusicService] No stream URL for:', next.url);
+        void this.playNext(guildId);
+        return;
+      }
+
+      const ffmpeg = spawn('ffmpeg', [
+        '-reconnect', '1',
+        '-reconnect_streamed', '1',
+        '-reconnect_delay_max', '5',
+        '-i', streamUrl,
+        '-analyzeduration', '0',
+        '-loglevel', 'warning',
+        '-f', 's16le',
+        '-ar', '48000',
+        '-ac', '2',
+        'pipe:1',
+      ], { stdio: ['ignore', 'pipe', 'ignore'] });
+
+      const resource = createAudioResource(ffmpeg.stdout, {
+        inputType: StreamType.Raw,
         inlineVolume: true,
       });
       resource.volume?.setVolumeLogarithmic(state.volume / 100);
       state.player.play(resource);
     } catch (err) {
-      console.error('[MusicService] Failed to stream track, skipping:', err);
+      console.error('[MusicService] Failed to play track, skipping:', err);
       void this.playNext(guildId);
     }
   }

@@ -1,5 +1,4 @@
 import { Events } from 'discord.js';
-import play from 'play-dl';
 import { createClient } from './bot';
 import { db } from './database/db';
 import { CustomCommandRepository } from './database/repositories/CustomCommandRepository';
@@ -14,11 +13,6 @@ import { MusicService } from './services/MusicService';
 
 async function main() {
   const { env } = await import('./config/env') as { env: { DISCORD_TOKEN: string } };
-
-  if (process.env.YOUTUBE_COOKIE) {
-    await play.setToken({ youtube: { cookie: process.env.YOUTUBE_COOKIE } });
-    console.log('YouTube cookies configured.');
-  }
 
   const client = createClient();
   const repo = new CustomCommandRepository(db);

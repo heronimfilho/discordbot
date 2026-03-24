@@ -4,15 +4,9 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import play from 'play-dl';
 import { ICommand } from '../../types/Command';
 import { MusicService, Track } from '../../services/MusicService';
-
-function formatDuration(totalSeconds: number): string {
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  return `${mins}:${String(secs).padStart(2, '0')}`;
-}
+import { getTrackInfo } from '../../services/YtDlpService';
 
 export function createTocarCommand(musicService: MusicService): ICommand {
   return {
@@ -52,37 +46,17 @@ export function createTocarCommand(musicService: MusicService): ICommand {
       await interaction.deferReply();
 
       const query = interaction.options.getString('busca', true);
-      let trackUrl: string;
-      let trackTitle: string;
-      let trackDuration: string;
 
-      try {
-        if (play.yt_validate(query) === 'video') {
-          const info = await play.video_info(query);
-          trackUrl = info.video_details.url;
-          trackTitle = info.video_details.title ?? 'Título desconhecido';
-          trackDuration = formatDuration(info.video_details.durationInSec ?? 0);
-        } else {
-          const results = await play.search(query, { source: { youtube: 'video' }, limit: 1 });
-          if (results.length === 0) {
-            await interaction.editReply('❌ Nenhum resultado encontrado para essa busca.');
-            return;
-          }
-          const video = results[0];
-          trackUrl = video.url;
-          trackTitle = video.title ?? 'Título desconhecido';
-          trackDuration = formatDuration(video.durationInSec ?? 0);
-        }
-      } catch (err) {
-        console.error('[/tocar] Error:', err);
-        await interaction.editReply('❌ Erro ao buscar a música. Tente uma URL direta ou outro nome.');
+      const info = await getTrackInfo(query);
+      if (!info) {
+        await interaction.editReply('❌ Não foi possível encontrar a música.');
         return;
       }
 
       const track: Track = {
-        title: trackTitle,
-        url: trackUrl,
-        duration: trackDuration,
+        title: info.title,
+        url: info.webpageUrl,
+        duration: info.duration,
         requestedBy: interaction.user.globalName ?? interaction.user.username,
       };
 
