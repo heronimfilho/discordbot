@@ -47,7 +47,7 @@ export class PendingDuelRepository {
   findByUser(guildId: string, userId: string): PendingDuel | null {
     const row = this.db
       .prepare(
-        `SELECT * FROM pending_duels WHERE guild_id = ? AND (challenger_id = ? OR challenged_id = ?) LIMIT 1`,
+        `SELECT * FROM pending_duels WHERE guild_id = ? AND (challenger_id = ? OR challenged_id = ?) AND expires_at > datetime('now') LIMIT 1`,
       )
       .get(guildId, userId, userId) as (Omit<PendingDuel, 'is_all_in'> & { is_all_in: number }) | undefined;
     if (!row) return null;
@@ -56,5 +56,9 @@ export class PendingDuelRepository {
 
   delete(id: number): void {
     this.db.prepare(`DELETE FROM pending_duels WHERE id = ?`).run(id);
+  }
+
+  deleteExpired(): void {
+    this.db.prepare(`DELETE FROM pending_duels WHERE expires_at <= datetime('now')`).run();
   }
 }

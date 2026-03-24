@@ -47,6 +47,8 @@ export function createDueloCommand(
         return;
       }
 
+      duelRepo.deleteExpired();
+
       const challenged = interaction.options.getUser('usuario', true);
       const valorStr = interaction.options.getString('valor', true).toLowerCase().trim();
       const isAllIn = valorStr === 'tudo';
