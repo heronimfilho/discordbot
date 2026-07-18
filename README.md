@@ -93,12 +93,6 @@ src/
 2. Add the translation to `src/locales/pt-BR.ts`
 3. Use Discord's `setNameLocalization` / `setDescriptionLocalization` for command names
 
-### Testing
-
-- Test all services and repositories
-- Do not test Discord.js interaction objects directly — mock them
-- Run: `npm test`
-
 ## Deployment (Render)
 
 1. Push to GitHub
