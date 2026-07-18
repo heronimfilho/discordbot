@@ -81,15 +81,6 @@ src/
 
 ---
 
-## Coding Guidelines
-
-### Principles
-
-- **SOLID** — each class has one responsibility; depend on abstractions (`ICommand`), not concretions
-- **DRY** — no repeated strings (use `locales/`), no manual command registration (auto-discovered)
-- **KISS** — simplest solution that works; no premature abstractions
-- **YAGNI** — do not add features until they are needed
-
 ### Adding a New Command
 
 1. Create a new file in `src/commands/<category>/yourcommand.ts`
@@ -107,17 +98,6 @@ src/
 - Test all services and repositories
 - Do not test Discord.js interaction objects directly — mock them
 - Run: `npm test`
-
-### Commit Convention
-
-```
-feat: add X
-fix: correct Y
-chore: update deps
-refactor: simplify Z
-```
-
----
 
 ## Deployment (Render)
 
